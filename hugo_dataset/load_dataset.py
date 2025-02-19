@@ -55,6 +55,12 @@ def main():
         description="Load dataset and hydrate PDFs for allowed licenses."
     )
     parser.add_argument(
+        "--dataset",
+        type=str,
+        default="data/evidence_dataset",
+        help="where to load the dataset from"
+    )
+    parser.add_argument(
         "--allowed-licenses",
         nargs="+",
         required=True,
@@ -64,7 +70,7 @@ def main():
     allowed_licenses = [e.lower() for e in args.allowed_licenses]
 
     # Path to the dataset on disk
-    dataset_dir = "data/evidence_dataset"
+    dataset_dir = args.dataset
 
     # Initialize and load DatasetLoader
     dataset_loader = DatasetLoader(dataset_dir=dataset_dir, allowed_licenses=allowed_licenses)

@@ -55,13 +55,22 @@ class acl(Retriever):
         # Extract abstract
         abstract_tag = soup.find('div', class_="card-body acl-abstract")
         abstract = abstract_tag.text.strip() if abstract_tag else ""
+
+        dt_tag = soup.find('dt', text='Year:')
+
+        # Get the corresponding <dd> tag (the next sibling)
+        if dt_tag:
+            dd_tag = dt_tag.find_next_sibling('dd')
+        if dd_tag:
+            year = dd_tag.text.strip()
     
         return dict(
             title=title,
             abs=abstract,
             id=id,
             url=paper_url,
-            source="acl anthology"
+            source="acl anthology",
+            year=year
         )
 
 class arxiv(Retriever):
@@ -94,6 +103,7 @@ class arxiv(Retriever):
 
             title = entry.find("{http://www.w3.org/2005/Atom}title").text.strip()
             abstract = entry.find("{http://www.w3.org/2005/Atom}summary").text.strip()
+            year = entry.find("{http://www.w3.org/2005/Atom}published").text.strip().split("-")[0]
         except Exception as e:
             raise ValueError(f"Error parsing metadata for arXiv ID {id}: {e}")
 
@@ -102,7 +112,8 @@ class arxiv(Retriever):
             url=f"https://arxiv.org/pdf/{id}.pdf",
             source="arxiv",
             title=title,
-            abs=abstract
+            abs=abstract,
+            year=year
         )
 
 GETTERS = {"arxiv": arxiv, 'acl anthology': acl}
