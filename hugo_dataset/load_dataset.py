@@ -1,11 +1,11 @@
 import argparse
 from typing_extensions import Annotated
 from datasets import load_from_disk
-from .evidence import DocumentHandler, Paper
+from evidence import DocumentHandler, Paper
 from pydantic import BaseModel, ConfigDict, StringConstraints
 
-from .logger import get_logger
-logger = get_logger("loader", "info")
+from logger import get_logger
+logger = get_logger("loader", "INFO")
 
 try:
     from rich import print
@@ -33,7 +33,7 @@ class DatasetLoader(BaseModel):
         logger.info("\nProcessing papers:")
 
         for paper in self.papers:
-            if "all" in self.allowed_licenses or paper.license_type not in self.allowed_licenses:
+            if "all" not in self.allowed_licenses and paper.license_type not in self.allowed_licenses:
                 logger.info(f"Skipping {paper.id} due to disallowed license '{paper.license_type}'.")
                 continue
 

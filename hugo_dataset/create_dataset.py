@@ -15,11 +15,11 @@ class DatasetManager(BaseModel):
   document_handler : DocumentHandler = DocumentHandler()
   dataset_dir: str ="data/evidence_dataset"
 
-  def process_all(self):
+  def process_all(self, additional_directories : list[str]=None):
     """
     Process (download and compute hash for) all papers in the list.
     """
-    self.document_handler.index()
+    self.document_handler.index(additional_directories=additional_directories)
     for paper in self.papers:
         try:
             path = paper.process(self.document_handler)
@@ -62,7 +62,7 @@ def main():
     Paper( id="N19-1423", url="https://aclanthology.org/N19-1423.pdf", source="ACL Anthology", year="2019") ],
     document_handler=DocumentHandler(doc_dir="data/cpdfs")
     ) # Process the predefined list of papers.
-  manager.process_all()
+  manager.process_all(additional_directories=["data/arxiv_sample"])
   # Add new papers directly by url.
   logger.info("\nAdding a new paper from an arXiv url...")
   manager.add_paper_from_url("https://arxiv.org/pdf/2301.12345.pdf")

@@ -68,8 +68,13 @@ class Retriever:
         """
         from . import logger
         logger.info(f"Retrieving {url} from remote source")
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+        except Exception as e:
+            logger.debug(e)
         if response.status_code == 200:
+            if os.path.isdir(target):
+                target = os.path.join(target, f"{cls.id_from_url(url)}.{cls.extension}")
             with open(target, "wb") as f:
                 f.write(response.content)
             return target
@@ -90,5 +95,5 @@ class Retriever:
             if local:
                 return local
         if offline:
-            return True
+            return None
         return cls._get_remote(url, target, **kwargs)

@@ -45,13 +45,14 @@ class DocumentHandler(BaseModel):
             logger.debug(self._local_store)
             json.dump(self._local_store, out)
     
-    def index(self, additional_indexes: list[str] | None=None):
+    def index(self, additional_directories: list[str] | None=None):
         """
         re-index the doc dir. Do not remove non-existent files.
         """
         indexes = [self.doc_dir]
-        if additional_indexes:
-            indexes += additional_indexes
+        if additional_directories:
+            # Add the destination location last to reduce unnecessary copying
+            indexes = additional_directories + indexes
         for _dir in indexes:
             found = 0
             updated = 0
@@ -101,7 +102,9 @@ class DocumentHandler(BaseModel):
             logger.info(f"Warning: A doc path was provided for {paper_id} but the file was not found.")
 
         logger.info(f"retrieving {doc_url} from {local_dir if local_dir else doc_url}")
-        return retrievers.get_document(source, doc_url, target=target_dir, local_dir=local_dir)
+        ret = retrievers.get_document(source, doc_url, target=target_dir, local_dir=local_dir)
+        logger.info(f"hydration - retrieved to {ret}")
+        return ret
 
 class Evidence(BaseModel):
     pass
