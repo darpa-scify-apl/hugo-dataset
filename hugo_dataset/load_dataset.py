@@ -1,11 +1,11 @@
 import argparse
 from typing_extensions import Annotated
 from datasets import load_from_disk
-from .evidence import PDFHandler, Paper
+from .evidence import DocumentHandler, Paper
 from pydantic import BaseModel, ConfigDict, StringConstraints
 
-from . import logger
-logger = logger.getChild("loader")
+from .logger import get_logger
+logger = get_logger("loader", "info")
 
 try:
     from rich import print
@@ -17,7 +17,7 @@ class DatasetLoader(BaseModel):
     
     dataset_dir : str
     allowed_licenses : list[Annotated[str, StringConstraints(to_lower=True)]]
-    pdf_handler : PDFHandler = PDFHandler()
+    pdf_handler : DocumentHandler = DocumentHandler()
     sources_mapping : dict[str, str] = {}
     papers : list[Paper] = []
     dataset : any = None

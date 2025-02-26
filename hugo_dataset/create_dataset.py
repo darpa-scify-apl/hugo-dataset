@@ -1,6 +1,9 @@
 from datasets import Dataset, DatasetDict 
-from .evidence import PDFHandler, Paper
+from evidence import DocumentHandler, Paper
 from pydantic import BaseModel
+
+from logger import get_logger
+logger = get_logger(__name__ + ".create_dataset")
 
 class DatasetManager(BaseModel): 
   sources : list[dict[str, str]] = [ 
@@ -9,19 +12,21 @@ class DatasetManager(BaseModel):
     ] 
   # Define an initial list of Paper objects. 
   papers : list[Paper]
-  pdf_handler : PDFHandler = PDFHandler()
+  document_handler : DocumentHandler = DocumentHandler()
   dataset_dir: str ="data/evidence_dataset"
 
   def process_all(self):
     """
     Process (download and compute hash for) all papers in the list.
     """
+    self.document_handler.index()
     for paper in self.papers:
         try:
-            pdf_path = paper.process(self.pdf_handler)
-            print(f"Processed {paper.id}, computed hash: {paper.hash}")
+            path = paper.process(self.document_handler)
+            logger.info(f"Processed {paper.id}, computed hash: {paper.hash}")
         except Exception as e:
-            print(f"Error processing {paper.id}: {e}")
+            logger.debug(f"Error processing {paper.id}: {e}")
+    self.document_handler.close()
 
   def add_paper_from_url(self, url):
     """
@@ -29,11 +34,11 @@ class DatasetManager(BaseModel):
     """
     try:
         paper = Paper.from_url(url)
-        paper.process(self.pdf_handler)
+        paper.process(self.document_handler)
+        logger.info(f"Added paper {paper.id} with hash: {paper.hash}")
         self.papers.append(paper)
-        print(f"Added paper {paper.id} with hash: {paper.hash}")
     except Exception as e:
-        print(f"Failed to add paper from {url}: {e}")
+        logger.debug(f"Failed to add paper from {url}: {e}")
 
   def save_dataset(self):
     """
@@ -48,21 +53,21 @@ class DatasetManager(BaseModel):
         "papers": papers_dataset,
     })
     dataset.save_to_disk(self.dataset_dir)
-    print(f"Dataset successfully saved to '{self.dataset_dir}'")
+    logger.info(f"Dataset successfully saved to '{self.dataset_dir}'")
 
 def main(): 
   manager = DatasetManager(papers=[ 
     Paper( id="1809.09600", url="https://arxiv.org/pdf/1809.09600.pdf", source="arXiv", year="2018"), 
     Paper( id="2009.07758", url="https://arxiv.org/pdf/2009.07758.pdf", source="arXiv", year="2020"), 
     Paper( id="N19-1423", url="https://aclanthology.org/N19-1423.pdf", source="ACL Anthology", year="2019") ],
-    pdf_handler=PDFHandler(pdf_dir="data/cpdfs")
+    document_handler=DocumentHandler(doc_dir="data/cpdfs")
     ) # Process the predefined list of papers.
   manager.process_all()
   # Add new papers directly by url.
-  print("\nAdding a new paper from an arXiv url...")
+  logger.info("\nAdding a new paper from an arXiv url...")
   manager.add_paper_from_url("https://arxiv.org/pdf/2301.12345.pdf")
 
-  print("\nAdding a new paper from an ACL Anthology url...")
+  logger.info("\nAdding a new paper from an ACL Anthology url...")
   manager.add_paper_from_url("https://aclanthology.org/P16-1174")
 
   # Save the dataset.
