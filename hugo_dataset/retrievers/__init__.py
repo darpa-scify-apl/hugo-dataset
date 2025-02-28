@@ -1,9 +1,9 @@
 from .acl import acl
 from .arxiv import arxiv
 from .wikipedia import wikipedia
-from .pubmed import pubmed
+from .mp import mp
 
-from logger import get_logger
+from hugo_dataset.logger import get_logger
 logger = get_logger(__name__+".retrievers")
 
 # Build the initial GETTERS dictionary from all included retrievers
@@ -11,7 +11,7 @@ GETTERS = {
     acl.source: acl,
     arxiv.source: arxiv,
     wikipedia.source: wikipedia,
-    pubmed.source: pubmed,
+    mp.source: mp,
 }
 
 def register_retriever(retriever_cls):

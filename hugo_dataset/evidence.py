@@ -14,7 +14,7 @@ DEFAULT_LICENSES = {
     "arxiv": "cc by 4.0", 
     "acl anthology": "acl license",
     "wikipedia": "cc by 4.0",
-    "pubmed": "cc by 4.0"
+    "mp": "mp license"
 }
 
 class DocumentHandler(BaseModel): 

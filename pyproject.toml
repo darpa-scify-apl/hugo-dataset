@@ -1,12 +1,13 @@
 [project]
-name = "dataset-example"
+name = "hugo-dataset"
 version = "0.1.0"
-description = "Add your description here"
+description = "Library for building and loading the DARPA SciFy Evidence Dataset"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "bs4>=0.0.2",
     "datasets>=3.3.1",
+    "mp-api>=0.45.3",
     "pydantic>=2.10.6",
     "pyzotero>=1.6.9",
     "rich>=13.9.4",
