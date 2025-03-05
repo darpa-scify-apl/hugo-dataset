@@ -1,8 +1,8 @@
 from datasets import Dataset, DatasetDict 
-from evidence import DocumentHandler, Paper
+from hugo_dataset.evidence import DocumentHandler, Paper
 from pydantic import BaseModel
 
-from logger import get_logger
+from hugo_dataset.logger import get_logger
 logger = get_logger(__name__ + ".create_dataset")
 
 class DatasetManager(BaseModel): 

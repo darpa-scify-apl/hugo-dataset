@@ -5,6 +5,7 @@ import requests
 class Retriever:
     source : str = "None"
     extension : str = "pdf"
+    license : str = "unknown"
 
     @classmethod
     def id_from_url(cls, url):

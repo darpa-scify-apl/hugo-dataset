@@ -1,24 +1,20 @@
 import json
 import os
 #import shutil 
-import retrievers
-import requests 
+#import requests 
 import hashlib
+from hugo_dataset import retrievers
 from pydantic import BaseModel, ConfigDict, StringConstraints
 from typing_extensions import Annotated
 
-from logger import get_logger
+from hugo_dataset.logger import get_logger
 logger = get_logger("evidence")
 
-DEFAULT_LICENSES = {
-    "arxiv": "cc by 4.0", 
-    "acl anthology": "acl license",
-    "wikipedia": "cc by 4.0",
-    "mp": "mp license"
-}
+DEFAULT_LICENSES = lambda x: retrievers.GETTERS.get(x, retrievers.base.retriever).license
 
 class DocumentHandler(BaseModel): 
     doc_dir : str = "data/docs"
+    local_dir : str | list[str] = []
     store_file : str | None = None
     _local_store : dict[str, str] | None = None
     move : bool = False # Whether a file should be copied or moved.
@@ -50,10 +46,15 @@ class DocumentHandler(BaseModel):
         re-index the doc dir. Do not remove non-existent files.
         """
         indexes = [self.doc_dir]
+        if type(self.local_dir) == str:
+            indexes.append(self.local_dir)
+        elif type(self.local_dir) == list:
+            indexes += [l for l in self.local_dir]
         if additional_directories:
             # Add the destination location last to reduce unnecessary copying
             indexes = additional_directories + indexes
         for _dir in indexes:
+            logger.debug(f"indexing documents in {_dir}")
             found = 0
             updated = 0
             pre = len(self.local_store)
@@ -82,7 +83,7 @@ class DocumentHandler(BaseModel):
                 hasher.update(chunk)
         return hasher.hexdigest()
 
-    def hydrate(self, paper, local_dir=None, ext='pdf'):
+    def hydrate(self, paper, local_dir=None, ext='pdf', offline=False):
         """
         Download the PDF for the given paper.
         The file is saved under a hierarchical directory structure based on the paper license and source.
@@ -102,7 +103,7 @@ class DocumentHandler(BaseModel):
             logger.info(f"Warning: A doc path was provided for {paper_id} but the file was not found.")
 
         logger.info(f"retrieving {doc_url} from {local_dir if local_dir else doc_url}")
-        ret = retrievers.get_document(source, doc_url, target=target_dir, local_dir=local_dir)
+        ret = retrievers.get_document(source, doc_url, target=target_dir, local_dir=local_dir, offline=offline)
         logger.info(f"hydration - retrieved to {ret}")
         return ret
 
@@ -142,7 +143,7 @@ class Paper(Evidence):
         else:
             raise ValueError("url must be either an arXiv or ACL Anthology link.")
 
-    def process(self, document_handler: DocumentHandler):
+    def process(self, document_handler: DocumentHandler, offline=False):
         """
         Download the paper's PDF and compute its hash.
         """
@@ -154,9 +155,13 @@ class Paper(Evidence):
 
         if not self.title or not self.abs:
             logger.info(f"retrieving metadata: {self.id}")
-            data = retrievers.get(self.source, self.id)
-            self.title = data['title']
-            self.abs = data['abs']
+            try:
+                data = retrievers.get(self.source, self.id)
+                self.title = data['title']
+                self.abs = data['abs']
+            except Exception as e:
+                logger.debug(f"Failed to retrieve metadata for {self.id}: {e}")
+
         if doc_path:
             logger.info(f"Computing hash for {self.id}")
             self.hash = document_handler.compute_hash(doc_path)
