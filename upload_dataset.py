@@ -21,7 +21,7 @@ def main():
     
     parser.add_argument(
         "--public",
-        type=bool,
+        action="store_true",
         default=False,
         help="Where to upload the dataset to"
     )
