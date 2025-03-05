@@ -5,6 +5,7 @@ from .base import Retriever
 class pubmed(Retriever):
     source = "pubmed"
     extension = "pdf"
+    license = "pubmed"
 
     @classmethod
     def id_from_url(cls, url):

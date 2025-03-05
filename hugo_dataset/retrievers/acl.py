@@ -5,6 +5,7 @@ from .base import Retriever
 
 class acl(Retriever):
     source = "acl anthology"
+    license = "acl"
 
     @classmethod
     def id_from_url(cls, url):

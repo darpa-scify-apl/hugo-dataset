@@ -17,6 +17,7 @@ def get_mp(id="mp-1105139"):
 class mp(Retriever):
     source : str = "materialsproject"
     extension : str = "json"
+    license = "materialsproject"
 
     @classmethod
     def id_from_url(cls, url):

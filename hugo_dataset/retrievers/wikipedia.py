@@ -5,6 +5,7 @@ from .base import Retriever
 class wikipedia(Retriever):
     source = "wikipedia"
     extension = "txt"
+    license = "cc by 4.0"
 
     @classmethod
     def id_from_url(cls, url):

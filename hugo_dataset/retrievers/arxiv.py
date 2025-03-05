@@ -5,6 +5,7 @@ from .base import Retriever
 
 class arxiv(Retriever):
     source = "arxiv"
+    license = "cc by 4.0"
 
     @classmethod
     def id_from_url(cls, url):
