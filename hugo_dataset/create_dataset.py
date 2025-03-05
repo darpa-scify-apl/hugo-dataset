@@ -6,10 +6,6 @@ from hugo_dataset.logger import get_logger
 logger = get_logger(__name__ + ".create_dataset")
 
 class DatasetManager(BaseModel): 
-  sources : list[dict[str, str]] = [ 
-      {"source": "arxiv", "license_type": "CC BY 4.0"}, 
-      {"source": "acl anthology", "license_type": "ACL License"} 
-    ] 
   # Define an initial list of Paper objects. 
   papers : list[Paper]
   document_handler : DocumentHandler = DocumentHandler()

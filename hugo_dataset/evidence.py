@@ -10,7 +10,8 @@ from typing_extensions import Annotated
 from hugo_dataset.logger import get_logger
 logger = get_logger("evidence")
 
-DEFAULT_LICENSES = lambda x: retrievers.GETTERS.get(x, retrievers.base.retriever).license
+DEFAULT_LICENSES = lambda x: retrievers.GETTERS.get(x, retrievers.base.Retriever).license
+UNKNOWN_LICENSE = DEFAULT_LICENSES("None")
 
 class DocumentHandler(BaseModel): 
     doc_dir : str = "data/docs"
@@ -89,8 +90,8 @@ class DocumentHandler(BaseModel):
         The file is saved under a hierarchical directory structure based on the paper license and source.
         """
         # Use the paper’s license field or default to 'unknown'
-        license_type = (paper.license_type or "unknown").lower()
-        source = (paper.source or "unknown").lower()
+        license_type = (paper.license_type or UNKNOWN_LICENSE).lower()
+        source = (paper.source or UNKNOWN_LICENSE).lower()
         paper_id = paper.id
         doc_url = paper.url
         
@@ -117,7 +118,7 @@ class Paper(Evidence):
     url : str
     source : Annotated[str, StringConstraints(to_lower=True)]
     year : str | None = None
-    license_type : Annotated[str, StringConstraints(to_lower=True)] = "unknown"
+    license_type : Annotated[str, StringConstraints(to_lower=True)] = UNKNOWN_LICENSE
     hash : str | None = None
     title : str | None = None
     abs : str | None = None
@@ -147,8 +148,8 @@ class Paper(Evidence):
         """
         Download the paper's PDF and compute its hash.
         """
-        if self.license_type == "unknown":
-            self.license_type = DEFAULT_LICENSES.get(self.source, "unknown")
+        if self.license_type == UNKNOWN_LICENSE:
+            self.license_type = DEFAULT_LICENSES(self.source)
             
         logger.info(f"Hydrating {self.source}-{self.id}")
         doc_path = document_handler.hydrate(self)
