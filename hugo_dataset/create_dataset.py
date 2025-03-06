@@ -11,10 +11,11 @@ class DatasetManager(BaseModel):
   document_handler : DocumentHandler = DocumentHandler()
   dataset_dir: str ="data/evidence_dataset"
 
-  def process_all(self, additional_directories : list[str]=None):
+  def process_all(self, additional_directories : list[str]=None, store_file : str = None):
     """
     Process (download and compute hash for) all papers in the list.
     """
+    self.document_handler.store_file=store_file
     self.document_handler.index(additional_directories=additional_directories)
     for paper in self.papers:
         try:

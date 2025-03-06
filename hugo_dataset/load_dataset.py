@@ -14,24 +14,38 @@ except:
 
 class DatasetLoader(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    dataset_dir : str
+    dataset_location : str
+    target_dir : str | None = None
     remote : bool
     allowed_licenses : list[Annotated[str, StringConstraints(to_lower=True)]]
-    doc_handler : DocumentHandler = DocumentHandler()
-    local_dirs : list[str] | None = None
+    _doc_handler : DocumentHandler | None = None
+    local_dirs : list[str] = []
     sources_mapping : dict[str, str] = {}
     papers : list[Paper] = []
     dataset : any = None
+    move : bool = False
+    store_file : str | None = None
+
+    @property
+    def doc_handler(self):
+        if self._doc_handler is None:
+            self._doc_handler = DocumentHandler(
+                local_dir=self.local_dirs, 
+                doc_dir=self.target_dir, 
+                move=self.move,
+                store_file=self.store_file
+                )
+        return self._doc_handler
 
     def load_dataset(self):
         # Load the Hugging Face DatasetDict from disk.
         if not self.dataset:
             if  not self.remote:
                 logger.debug("Trying to load from local directory")
-                self.dataset = load_from_disk(self.dataset_dir)
+                self.dataset = load_from_disk(self.dataset_location)
             else:
                 logger.debug("Trying to load from remote directory")
-                self.dataset = load_dataset(self.dataset_dir)
+                self.dataset = load_dataset(self.dataset_location)
 
         self.papers = [Paper.from_metadata(paper) for paper in self.dataset["papers"]]
 
@@ -110,24 +124,32 @@ def main():
         default=False,
         help="move files when processing data instead of copying (use at your own risk for now)"
     )
+
+    parser.add_argument(
+        "--store_file",
+        default=None,
+        type=str,
+        help="A json mapping from id to filepath"
+    )
     args = parser.parse_args()
     allowed_licenses = [e.lower() for e in args.allowed_licenses]
 
     # Path to the dataset on disk
-    dataset_dir = args.dataset
+    dataset_location = args.dataset
     local_dirs = args.local_dir
     remote = args.remote
     target_dir = args.target_dir
     move = args.move
+    store_file = args.store_file
 
-    doc_handler = DocumentHandler(local_dir=local_dirs, doc_dir=target_dir, move=move)
     # Initialize and load DatasetLoader
-    dataset_loader = DatasetLoader(dataset_dir=dataset_dir,
+    dataset_loader = DatasetLoader(dataset_location=dataset_location,
                                    target_dir=target_dir,
                                    allowed_licenses=allowed_licenses, 
                                    local_dirs=local_dirs, 
                                    remote=remote,
-                                   doc_handler=doc_handler
+                                   move=move,
+                                   store_file=store_file
                                    )
     dataset_loader.load_dataset()
 

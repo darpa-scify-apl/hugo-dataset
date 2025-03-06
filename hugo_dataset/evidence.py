@@ -104,7 +104,7 @@ class DocumentHandler(BaseModel):
             logger.info(f"Warning: A doc path was provided for {paper_id} but the file was not found.")
 
         logger.info(f"retrieving {doc_url} from {local_dir if local_dir else doc_url}")
-        ret = retrievers.get_document(source, doc_url, target=target_dir, local_dir=local_dir, offline=offline)
+        ret = retrievers.get_document(source, doc_url, target=target_dir, local_dir=local_dir, offline=offline, evidence=paper)
         logger.info(f"hydration - retrieved to {ret}")
         return ret
 
