@@ -1,9 +1,13 @@
 # Hugo Dataset
-![datasets](https://img.shields.io/badge/datasets-APL_SciFy-blue?link=https%3A%2F%2Fhuggingface.co%2Fdatasets%2FSciFy) ![Static Badge](https://img.shields.io/badge/version-0.1.0-black)
+![datasets](https://img.shields.io/badge/datasets-APL_SciFy-blue?link=https%3A%2F%2Fhuggingface.co%2FSciFy) ![Static Badge](https://img.shields.io/badge/version-0.1.0-black)
 
 **Library for Building and Loading the DARPA SciFy Evidence Dataset**
 
-Datasets: https://huggingface.co/datasets/SciFy
+Datasets: https://huggingface.co/SciFy
+
+> [!NOTE]  
+> Access to the datasets is gated. You will need to go to the dataset page and request access on HuggingFace directly. Access is provided instantly.
+> Make sure you are [logged into HuggingFace](https://huggingface.co/docs/huggingface_hub/en/guides/cli) when trying to retrieve datasets.
 
 The **Hugo Dataset** repository provides a modular Python library for creating, processing, and managing datasets composed of scientific papers and evidence documents. It supports importing metadata and attachments (e.g., via Zotero), indexing and downloading PDFs, and uploading the final dataset (for example, to the Hugging Face Hub). This repository is now configured to work with [uv](https://astral.sh/uv) – a fast, unified Python project manager – for environment management, dependency resolution, and script execution.
 
