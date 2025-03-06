@@ -18,7 +18,8 @@ The **Hugo Dataset** repository provides a modular Python library for creating, 
 This gives you all the pointers to the documents you need (see [SciFy/materials_sciences_demo](https://huggingface.co/datasets/SciFy/materials_sciences_demo))
 
 ```bash
-pip install datasets
+uv init
+uv add datasets
 ```
 
 In python:
@@ -111,7 +112,10 @@ hugo-dataset/
 
 ## Installation Using uv
 
-uv is used to streamline the setup and execution of this repository. Follow these steps:
+> [!Note]
+> The installation and packages should work using `pip` and other package managers.
+
+`uv` is used to streamline the setup and execution of this repository. Follow these steps:
 
 1. **Clone the Repository**
 
@@ -167,8 +171,8 @@ You may provide a `store_file` containing a mapping from `id` to `file_path`:
 
 Before running the script, ensure you have set the required environment variables:
 
-- `ZOTERO_LIBRARY`
 - `ZOTERO_API_KEY`
+- `ZOTERO_LIBRARY`
 - `ZOTERO_COLLECTION`
 
 Run the Zotero loader using uv:
@@ -219,6 +223,25 @@ You can rewrite the implementation in `hugo_dataset.retrievers.base` or implemen
 #### TODO
 - [ ] A cleaner workflow for managing your own retriever workflows.
 
+### API Keys
+#### Zotero
+
+- `ZOTERO_API_KEY`
+- `ZOTERO_LIBRARY`
+- `ZOTERO_COLLECTION`
+
+Find your group and collection id by navigating to your collection in the browser
+
+```
+https://www.zotero.org/groups/<LIBRARY_ID>/[library_name]/collections/<COLLECTION_ID>
+```
+
+[Create a Zotero API Key](https://www.zotero.org/settings/security)
+
+#### MaterialsProject
+- `MP_API_KEY`
+
+[Create a MaterialsProject API key here](https://next-gen.materialsproject.org/api)
 
 ---
 
