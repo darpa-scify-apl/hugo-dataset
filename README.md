@@ -1,5 +1,5 @@
 # Hugo Dataset
-![datasets](https://img.shields.io/badge/datasets-APL_SciFy-blue?link=https%3A%2F%2Fhuggingface.co%2FSciFy) ![Static Badge](https://img.shields.io/badge/version-0.1.0-black)
+![datasets](https://img.shields.io/badge/datasets-APL_SciFy-blue?link=https%3A%2F%2Fhuggingface.co%2Fdatasets%2FSciFy%2Fmaterials_sciences_demo) ![version](https://img.shields.io/badge/version-0.1.0-black)
 
 **Library for Building and Loading the DARPA SciFy Evidence Dataset**
 
